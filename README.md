@@ -79,14 +79,6 @@
 
 <br/>
 
-#### 🏆 Trophies
-
-<div align="center">
-<img src="https://github-profile-trophy.vercel.app/?username=xxoyeon-22&theme=gitdimmed&no-frame=true&row=1&column=6&margin-w=8&margin-h=8" />
-</div>
-
-<br/>
-
 <img src="https://capsule-render.vercel.app/api?type=soft&color=0:0D1117,100:0D1117&height=90&section=header&text=GitHub%20Stats&fontSize=32&fontColor=FFFFFF&fontAlignY=62&fontAlign=8&animation=fadeIn" width="100%"/>
 
 <div align="center">
