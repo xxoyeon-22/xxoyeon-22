@@ -30,6 +30,24 @@
 
 <img src="https://capsule-render.vercel.app/api?type=soft&color=0:0D1117,100:0D1117&height=90&section=header&text=Projects&fontSize=32&fontColor=FFFFFF&fontAlignY=62&fontAlign=50&animation=fadeIn" width="100%"/>
 
+#### ✅ Completed
+
+<table>
+<tr>
+<td width="100%" valign="top">
+
+**자동차 위치 탐지 오디오 데이터셋 구축 플랫폼**
+<br/>
+<sub>Personal · Completed · <a href="https://github.com/xxoyeon-22/car-audio-dataset-platform">View on GitHub</a></sub>
+
+자동차 소리 기반 음원 위치 추정(SSL) 모델 학습용 데이터셋을 구축하는 Streamlit 라벨링 플랫폼 + FastAPI 서버입니다.
+
+`파형 구간 라벨링` `커스텀 라벨 카테고리` `클래스 분포 시각화`
+
+</td>
+</tr>
+</table>
+
 #### 🚧 In Progress
 
 <table>
@@ -47,13 +65,13 @@
 </td>
 <td width="50%" valign="top">
 
-**자동차 위치 탐지 오디오 데이터셋 구축 플랫폼**
+**자동차 위치 탐지 오디오 데이터셋 구축 및 연구**
 <br/>
-<sub>Personal · In Progress · <a href="https://github.com/xxoyeon-22/car-audio-dataset-platform">View on GitHub</a></sub>
+<sub>Research · In Progress · <a href="https://github.com/xxoyeon-22/car-audio-localization-dataset">View on GitHub</a></sub>
 
-자동차 소리 기반 음원 위치 추정(SSL) 모델 학습용 데이터셋을 구축하는 Streamlit 라벨링 플랫폼 + FastAPI 서버입니다.
+위 플랫폼으로 실제 자동차 소리 데이터를 수집·라벨링하고, 음원 위치 추정(SSL) 모델을 학습·평가하는 연구입니다.
 
-`파형 구간 라벨링` `커스텀 라벨 카테고리` `클래스 분포 시각화`
+`데이터 수집` `SSL 모델 학습` `성능 평가`
 
 </td>
 </tr>
