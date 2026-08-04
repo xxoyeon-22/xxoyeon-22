@@ -82,11 +82,14 @@
 <img src="https://capsule-render.vercel.app/api?type=soft&color=0:0D1117,100:0D1117&height=90&section=header&text=GitHub%20Stats&fontSize=32&fontColor=FFFFFF&fontAlignY=62&fontAlign=50&animation=fadeIn" width="100%"/>
 
 <div align="center">
-<img src="https://raw.githubusercontent.com/xxoyeon-22/xxoyeon-22/main/metrics.svg" width="100%" />
-</div>
 
-<div align="center">
-<img src="https://github-readme-streak-stats.herokuapp.com/?user=xxoyeon-22&hide_border=true&background=0D1117&ring=FFFFFF&fire=FFFFFF&currStreakLabel=FFFFFF" height="165" />
+<img src="https://img.shields.io/github/followers/xxoyeon-22?style=for-the-badge&label=Followers&labelColor=000000&color=161616&logo=github&logoColor=white" />
+<img src="https://img.shields.io/badge/dynamic/json?style=for-the-badge&label=Public%20Repos&labelColor=000000&color=161616&logo=github&logoColor=white&query=public_repos&url=https%3A%2F%2Fapi.github.com%2Fusers%2Fxxoyeon-22" />
+
+<br/>
+
+<img src="https://github-readme-streak-stats.herokuapp.com/?user=xxoyeon-22&hide_border=true&background=0D1117&ring=FFFFFF&fire=FFFFFF&currStreakLabel=FFFFFF" height="150" />
+
 </div>
 
 <br/>
