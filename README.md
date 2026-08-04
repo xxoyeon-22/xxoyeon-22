@@ -11,7 +11,7 @@
 
 <br/>
 
-<img src="https://capsule-render.vercel.app/api?type=soft&color=0:0D1117,100:0D1117&height=90&section=header&text=About&fontSize=32&fontColor=FFFFFF&fontAlignY=62&fontAlign=8&animation=fadeIn" width="100%"/>
+<img src="https://capsule-render.vercel.app/api?type=soft&color=0:0D1117,100:0D1117&height=90&section=header&text=About&fontSize=32&fontColor=FFFFFF&fontAlignY=62&fontAlign=50&animation=fadeIn" width="100%"/>
 
 오디오 · 음성 데이터를 다룹니다. 정리되지 않은 원본 신호를 라벨링 가능한 구조로 바꾸고, 그 위에서 모델이 실제로 검증할 수 있는 데이터셋을 설계하는 과정에 집중하고 있습니다.
 
@@ -28,7 +28,7 @@
 
 <br/>
 
-<img src="https://capsule-render.vercel.app/api?type=soft&color=0:0D1117,100:0D1117&height=90&section=header&text=Projects&fontSize=32&fontColor=FFFFFF&fontAlignY=62&fontAlign=8&animation=fadeIn" width="100%"/>
+<img src="https://capsule-render.vercel.app/api?type=soft&color=0:0D1117,100:0D1117&height=90&section=header&text=Projects&fontSize=32&fontColor=FFFFFF&fontAlignY=62&fontAlign=50&animation=fadeIn" width="100%"/>
 
 #### 🚧 In Progress
 
@@ -61,7 +61,7 @@
 
 <br/>
 
-<img src="https://capsule-render.vercel.app/api?type=soft&color=0:0D1117,100:0D1117&height=90&section=header&text=Tech%20Stack&fontSize=32&fontColor=FFFFFF&fontAlignY=62&fontAlign=8&animation=fadeIn" width="100%"/>
+<img src="https://capsule-render.vercel.app/api?type=soft&color=0:0D1117,100:0D1117&height=90&section=header&text=Tech%20Stack&fontSize=32&fontColor=FFFFFF&fontAlignY=62&fontAlign=50&animation=fadeIn" width="100%"/>
 
 <div align="center">
 
@@ -79,17 +79,14 @@
 
 <br/>
 
-<img src="https://capsule-render.vercel.app/api?type=soft&color=0:0D1117,100:0D1117&height=90&section=header&text=GitHub%20Stats&fontSize=32&fontColor=FFFFFF&fontAlignY=62&fontAlign=8&animation=fadeIn" width="100%"/>
+<img src="https://capsule-render.vercel.app/api?type=soft&color=0:0D1117,100:0D1117&height=90&section=header&text=GitHub%20Stats&fontSize=32&fontColor=FFFFFF&fontAlignY=62&fontAlign=50&animation=fadeIn" width="100%"/>
 
 <div align="center">
-
-<img src="https://github-readme-stats.vercel.app/api?username=xxoyeon-22&show_icons=true&hide_title=true&hide_border=true&bg_color=0D1117&title_color=FFFFFF&text_color=C9D1D9&icon_color=FFFFFF&ring_color=FFFFFF" height="165" />
-<img src="https://github-readme-streak-stats.herokuapp.com/?user=xxoyeon-22&hide_border=true&background=0D1117&ring=FFFFFF&fire=FFFFFF&currStreakLabel=FFFFFF" height="165" />
-
+<img src="https://raw.githubusercontent.com/xxoyeon-22/xxoyeon-22/main/metrics.svg" width="100%" />
 </div>
 
 <div align="center">
-<img src="https://github-readme-activity-graph.vercel.app/graph?username=xxoyeon-22&bg_color=0D1117&color=FFFFFF&line=FFFFFF&point=FFFFFF&area=true&hide_border=true" width="100%" />
+<img src="https://github-readme-streak-stats.herokuapp.com/?user=xxoyeon-22&hide_border=true&background=0D1117&ring=FFFFFF&fire=FFFFFF&currStreakLabel=FFFFFF" height="165" />
 </div>
 
 <br/>
