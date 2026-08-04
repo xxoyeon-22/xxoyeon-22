@@ -13,7 +13,7 @@
 
 <img src="https://capsule-render.vercel.app/api?type=soft&color=0:0D1117,100:0D1117&height=90&section=header&text=About&fontSize=32&fontColor=FFFFFF&fontAlignY=62&fontAlign=8&animation=fadeIn" width="100%"/>
 
-오디오 · 음성 데이터를 다루는 걸 좋아합니다. 정리되지 않은 원본 신호를 라벨링 가능한 구조로 바꾸고, 그 위에서 모델이 실제로 검증할 수 있는 데이터셋을 설계하는 과정에 집중하고 있습니다.
+오디오 · 음성 데이터를 다룹니다. 정리되지 않은 원본 신호를 라벨링 가능한 구조로 바꾸고, 그 위에서 모델이 실제로 검증할 수 있는 데이터셋을 설계하는 과정에 집중하고 있습니다.
 
 - 🎧 음원 위치 추정(SSL), 음성 위·변조 탐지(Partial-Spoof) 등 **오디오/음성 도메인 데이터셋 구축**
 - 🛠️ Python 기반 라벨링 플랫폼 & API 서버 직접 설계·개발 (Streamlit + FastAPI)
