@@ -11,7 +11,7 @@
 
 <br/>
 
-## About
+<img src="https://capsule-render.vercel.app/api?type=soft&color=0:0D1117,100:0D1117&height=90&section=header&text=About&fontSize=32&fontColor=FFFFFF&fontAlignY=62&fontAlign=8&animation=fadeIn" width="100%"/>
 
 오디오 · 음성 데이터를 다루는 걸 좋아합니다. 정리되지 않은 원본 신호를 라벨링 가능한 구조로 바꾸고, 그 위에서 모델이 실제로 검증할 수 있는 데이터셋을 설계하는 과정에 집중하고 있습니다.
 
@@ -19,9 +19,18 @@
 - 🛠️ Python 기반 라벨링 플랫폼 & API 서버 직접 설계·개발 (Streamlit + FastAPI)
 - 🤝 새로운 프로젝트와 협업 항상 환영합니다
 
+<div align="center">
+
+<a href="mailto:kty030213@gmail.com"><img src="https://img.shields.io/badge/Email-kty030213%40gmail.com-000000?style=for-the-badge&logo=gmail&logoColor=white" /></a>
+<a href="https://huggingface.co/xxoyeon"><img src="https://img.shields.io/badge/Hugging%20Face-xxoyeon-000000?style=for-the-badge&logo=huggingface&logoColor=white" /></a>
+
+</div>
+
 <br/>
 
-## Projects
+<img src="https://capsule-render.vercel.app/api?type=soft&color=0:0D1117,100:0D1117&height=90&section=header&text=Projects&fontSize=32&fontColor=FFFFFF&fontAlignY=62&fontAlign=8&animation=fadeIn" width="100%"/>
+
+#### 🚧 In Progress
 
 <table>
 <tr>
@@ -29,7 +38,7 @@
 
 **한국어 Partial-Spoof 음성 데이터셋 구축 및 언어 간 일반화 평가**
 <br/>
-<sub>Research · In Progress</sub>
+<sub>Research · In Progress · <a href="https://github.com/xxoyeon-22/korean-partial-spoof-dataset">View on GitHub</a></sub>
 
 한국어 부분 조작(Partial-Spoof) 음성 데이터셋을 구축하고, 최신 탐지·로컬라이제이션 모델의 언어 간(cross-lingual) 일반화 성능을 평가하는 연구 프로젝트입니다.
 
@@ -52,7 +61,7 @@
 
 <br/>
 
-## Stack
+<img src="https://capsule-render.vercel.app/api?type=soft&color=0:0D1117,100:0D1117&height=90&section=header&text=Tech%20Stack&fontSize=32&fontColor=FFFFFF&fontAlignY=62&fontAlign=8&animation=fadeIn" width="100%"/>
 
 <div align="center">
 
@@ -70,7 +79,15 @@
 
 <br/>
 
-## GitHub Stats
+#### 🏆 Trophies
+
+<div align="center">
+<img src="https://github-profile-trophy.vercel.app/?username=xxoyeon-22&theme=gitdimmed&no-frame=true&row=1&column=6&margin-w=8&margin-h=8" />
+</div>
+
+<br/>
+
+<img src="https://capsule-render.vercel.app/api?type=soft&color=0:0D1117,100:0D1117&height=90&section=header&text=GitHub%20Stats&fontSize=32&fontColor=FFFFFF&fontAlignY=62&fontAlign=8&animation=fadeIn" width="100%"/>
 
 <div align="center">
 
@@ -81,4 +98,12 @@
 
 <div align="center">
 <img src="https://github-readme-activity-graph.vercel.app/graph?username=xxoyeon-22&bg_color=0D1117&color=FFFFFF&line=FFFFFF&point=FFFFFF&area=true&hide_border=true" width="100%" />
+</div>
+
+<br/>
+
+#### 🐍 Contributions
+
+<div align="center">
+<img src="https://raw.githubusercontent.com/xxoyeon-22/xxoyeon-22/output/github-contribution-grid-snake-dark.svg" width="100%" />
 </div>
