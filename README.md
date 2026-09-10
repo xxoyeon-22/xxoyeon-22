@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://readme-typing-svg.demolab.com/?font=JetBrains+Mono&weight=500&size=30&duration=2800&pause=1200&color=2A2118&center=true&vCenter=true&width=640&lines=Hi%2C+I'm+%EA%B9%80%ED%83%9C%EC%97%B0+(Kim+Taeyeon);Audio+%2F+Speech+ML+%C2%B7+Data+Engineering;I+build+the+datasets+that+don't+exist+yet." alt="Typing SVG" />
+## Audio / Speech ML · Data Engineering
 
 <br/>
 
