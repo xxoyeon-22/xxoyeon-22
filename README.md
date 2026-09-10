@@ -1,17 +1,17 @@
 <div align="center">
 
-<img src="https://readme-typing-svg.demolab.com/?font=JetBrains+Mono&weight=500&size=30&duration=2800&pause=1200&color=FFFFFF&center=true&vCenter=true&width=640&lines=Hi%2C+I'm+%EA%B9%80%ED%83%9C%EC%97%B0+(Kim+Taeyeon);Audio+%2F+Speech+ML+%C2%B7+Data+Engineering;I+build+the+datasets+that+don't+exist+yet." alt="Typing SVG" />
+<img src="https://readme-typing-svg.demolab.com/?font=JetBrains+Mono&weight=500&size=30&duration=2800&pause=1200&color=2A2118&center=true&vCenter=true&width=640&lines=Hi%2C+I'm+%EA%B9%80%ED%83%9C%EC%97%B0+(Kim+Taeyeon);Audio+%2F+Speech+ML+%C2%B7+Data+Engineering;I+build+the+datasets+that+don't+exist+yet." alt="Typing SVG" />
 
 <br/>
 
-<img src="https://img.shields.io/badge/focus-audio%20%26%20speech%20ML-000000?style=for-the-badge&labelColor=000000&color=161616" />
-<img src="https://img.shields.io/badge/role-dataset%20%26%20platform%20builder-000000?style=for-the-badge&labelColor=000000&color=161616" />
+<img src="https://img.shields.io/badge/focus-audio%20%26%20speech%20ML-2A2118?style=for-the-badge&labelColor=2A2118&color=6B4A32" />
+<img src="https://img.shields.io/badge/role-dataset%20%26%20platform%20builder-2A2118?style=for-the-badge&labelColor=2A2118&color=6B4A32" />
 
 </div>
 
 <br/>
 
-<img src="https://capsule-render.vercel.app/api?type=soft&color=0:0D1117,100:0D1117&height=90&section=header&text=About&fontSize=32&fontColor=FFFFFF&fontAlignY=62&fontAlign=50&animation=fadeIn" width="100%"/>
+<img src="https://capsule-render.vercel.app/api?type=soft&color=0:F4EAD5,100:F4EAD5&height=90&section=header&text=About&fontSize=32&fontColor=2A2118&fontAlignY=62&fontAlign=50&animation=fadeIn" width="100%"/>
 
 오디오 · 음성 데이터를 다룹니다. 정리되지 않은 원본 신호를 라벨링 가능한 구조로 바꾸고, 그 위에서 모델이 실제로 검증할 수 있는 데이터셋을 설계하는 과정에 집중하고 있습니다.
 
@@ -21,14 +21,14 @@
 
 <div align="center">
 
-<a href="mailto:kty030213@gmail.com"><img src="https://img.shields.io/badge/Email-kty030213%40gmail.com-000000?style=for-the-badge&logo=gmail&logoColor=white" /></a>
-<a href="https://huggingface.co/xxoyeon"><img src="https://img.shields.io/badge/Hugging%20Face-xxoyeon-000000?style=for-the-badge&logo=huggingface&logoColor=white" /></a>
+<a href="mailto:kty030213@gmail.com"><img src="https://img.shields.io/badge/Email-kty030213%40gmail.com-2A2118?style=for-the-badge&logo=gmail&logoColor=white" /></a>
+<a href="https://huggingface.co/xxoyeon"><img src="https://img.shields.io/badge/Hugging%20Face-xxoyeon-2A2118?style=for-the-badge&logo=huggingface&logoColor=white" /></a>
 
 </div>
 
 <br/>
 
-<img src="https://capsule-render.vercel.app/api?type=soft&color=0:0D1117,100:0D1117&height=90&section=header&text=Projects&fontSize=32&fontColor=FFFFFF&fontAlignY=62&fontAlign=50&animation=fadeIn" width="100%"/>
+<img src="https://capsule-render.vercel.app/api?type=soft&color=0:F4EAD5,100:F4EAD5&height=90&section=header&text=Projects&fontSize=32&fontColor=2A2118&fontAlignY=62&fontAlign=50&animation=fadeIn" width="100%"/>
 
 #### ✅ Completed
 
@@ -79,34 +79,34 @@
 
 <br/>
 
-<img src="https://capsule-render.vercel.app/api?type=soft&color=0:0D1117,100:0D1117&height=90&section=header&text=Tech%20Stack&fontSize=32&fontColor=FFFFFF&fontAlignY=62&fontAlign=50&animation=fadeIn" width="100%"/>
+<img src="https://capsule-render.vercel.app/api?type=soft&color=0:F4EAD5,100:F4EAD5&height=90&section=header&text=Tech%20Stack&fontSize=32&fontColor=2A2118&fontAlignY=62&fontAlign=50&animation=fadeIn" width="100%"/>
 
 <div align="center">
 
-<img src="https://img.shields.io/badge/Python-000000?style=for-the-badge&logo=python&logoColor=white" />
-<img src="https://img.shields.io/badge/FastAPI-000000?style=for-the-badge&logo=fastapi&logoColor=white" />
-<img src="https://img.shields.io/badge/Streamlit-000000?style=for-the-badge&logo=streamlit&logoColor=white" />
-<img src="https://img.shields.io/badge/Pytest-000000?style=for-the-badge&logo=pytest&logoColor=white" />
+<img src="https://img.shields.io/badge/Python-2A2118?style=for-the-badge&logo=python&logoColor=white" />
+<img src="https://img.shields.io/badge/FastAPI-2A2118?style=for-the-badge&logo=fastapi&logoColor=white" />
+<img src="https://img.shields.io/badge/Streamlit-2A2118?style=for-the-badge&logo=streamlit&logoColor=white" />
+<img src="https://img.shields.io/badge/Pytest-2A2118?style=for-the-badge&logo=pytest&logoColor=white" />
 <br/>
-<img src="https://img.shields.io/badge/TypeScript-000000?style=for-the-badge&logo=typescript&logoColor=white" />
-<img src="https://img.shields.io/badge/React-000000?style=for-the-badge&logo=react&logoColor=white" />
-<img src="https://img.shields.io/badge/TailwindCSS-000000?style=for-the-badge&logo=tailwindcss&logoColor=white" />
-<img src="https://img.shields.io/badge/Git-000000?style=for-the-badge&logo=git&logoColor=white" />
+<img src="https://img.shields.io/badge/TypeScript-2A2118?style=for-the-badge&logo=typescript&logoColor=white" />
+<img src="https://img.shields.io/badge/React-2A2118?style=for-the-badge&logo=react&logoColor=white" />
+<img src="https://img.shields.io/badge/TailwindCSS-2A2118?style=for-the-badge&logo=tailwindcss&logoColor=white" />
+<img src="https://img.shields.io/badge/Git-2A2118?style=for-the-badge&logo=git&logoColor=white" />
 
 </div>
 
 <br/>
 
-<img src="https://capsule-render.vercel.app/api?type=soft&color=0:0D1117,100:0D1117&height=90&section=header&text=GitHub%20Stats&fontSize=32&fontColor=FFFFFF&fontAlignY=62&fontAlign=50&animation=fadeIn" width="100%"/>
+<img src="https://capsule-render.vercel.app/api?type=soft&color=0:F4EAD5,100:F4EAD5&height=90&section=header&text=GitHub%20Stats&fontSize=32&fontColor=2A2118&fontAlignY=62&fontAlign=50&animation=fadeIn" width="100%"/>
 
 <div align="center">
 
-<img src="https://img.shields.io/github/followers/xxoyeon-22?style=for-the-badge&label=Followers&labelColor=000000&color=161616&logo=github&logoColor=white" />
-<img src="https://img.shields.io/badge/dynamic/json?style=for-the-badge&label=Public%20Repos&labelColor=000000&color=161616&logo=github&logoColor=white&query=public_repos&url=https%3A%2F%2Fapi.github.com%2Fusers%2Fxxoyeon-22" />
+<img src="https://img.shields.io/github/followers/xxoyeon-22?style=for-the-badge&label=Followers&labelColor=2A2118&color=6B4A32&logo=github&logoColor=white" />
+<img src="https://img.shields.io/badge/dynamic/json?style=for-the-badge&label=Public%20Repos&labelColor=2A2118&color=6B4A32&logo=github&logoColor=white&query=public_repos&url=https%3A%2F%2Fapi.github.com%2Fusers%2Fxxoyeon-22" />
 
 <br/>
 
-<img src="https://github-readme-streak-stats.herokuapp.com/?user=xxoyeon-22&hide_border=true&background=0D1117&ring=FFFFFF&fire=FFFFFF&currStreakLabel=FFFFFF" height="150" />
+<img src="https://github-readme-streak-stats.herokuapp.com/?user=xxoyeon-22&hide_border=true&background=F4EAD5&ring=2A2118&fire=B5651D&currStreakLabel=2A2118" height="150" />
 
 </div>
 
@@ -115,5 +115,5 @@
 #### 🐍 Contributions
 
 <div align="center">
-<img src="https://raw.githubusercontent.com/xxoyeon-22/xxoyeon-22/output/github-contribution-grid-snake-dark.svg" width="100%" />
+<img src="https://raw.githubusercontent.com/xxoyeon-22/xxoyeon-22/output/github-contribution-grid-snake.svg" width="100%" />
 </div>
