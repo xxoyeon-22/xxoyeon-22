@@ -4,13 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>끝말잇기 온라인 대결</title>
-<meta name="description" content="친구와 각자 기기에서 겨루는 끝말잇기. 방 코드로 바로 입장!">
+<meta name="description" content="친구들과 각자 기기에서 겨루는 끝말잇기. 방 코드로 바로 입장!">
 <meta property="og:type" content="website">
 <meta property="og:title" content="🔤 끝말잇기 온라인 대결">
-<meta property="og:description" content="방 코드로 친구와 바로 한 판!">
+<meta property="og:description" content="방 코드로 친구들과 바로 한 판!">
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <style>
-  :root { --bg:#fbf6ea; --card:#fffdf7; --ink:#3b3226; --p1:#e0674f; --p2:#3f8f8b; --mute:#9a8f7e; }
+  :root { --bg:#fbf6ea; --card:#fffdf7; --ink:#3b3226; --p1:#e0674f; --mute:#9a8f7e; }
   * { box-sizing:border-box; }
   body { margin:0; min-height:100vh; background:var(--bg); color:var(--ink);
          font-family:-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;
@@ -19,12 +19,12 @@
   h1 { text-align:center; margin:8px 0 16px; }
   .card { background:var(--card); border-radius:16px; padding:16px; box-shadow:0 2px 10px #0001; margin-bottom:12px; }
   .hidden { display:none !important; }
-  .players { display:flex; gap:10px; }
-  .player { flex:1; text-align:center; padding:10px; border-radius:12px; border:3px solid transparent; background:#0000000a; }
-  .player.active { border-color:currentColor; background:#fff; }
-  .player .nm { font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-  .p1 { color:var(--p1); } .p2 { color:var(--p2); }
-  .score { font-size:1.6rem; font-weight:800; }
+  .plist { display:flex; flex-wrap:wrap; gap:8px; }
+  .pl { flex:1 1 100px; text-align:center; padding:8px; border-radius:12px; border:3px solid transparent; background:#0000000a; color:var(--c); min-width:0; }
+  .pl.active { border-color:currentColor; background:#fff; }
+  .pl.gone { opacity:.35; text-decoration:line-through; }
+  .pl .nm { font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .pl .sc { font-size:1.4rem; font-weight:800; }
   .timer { height:8px; background:#0000001a; border-radius:4px; overflow:hidden; margin-top:12px; }
   .timer > div { height:100%; width:100%; background:var(--ink); }
   .current { text-align:center; font-size:2.4rem; font-weight:800; margin:10px 0 4px; letter-spacing:.1em; }
@@ -36,8 +36,7 @@
   button:disabled { opacity:.4; cursor:default; }
   button.ghost { background:#0000001a; color:var(--ink); }
   .words { display:flex; flex-wrap:wrap; gap:6px; max-height:180px; overflow:auto; }
-  .chip { padding:4px 10px; border-radius:999px; color:#fff; font-size:.9rem; }
-  .chip.p1 { background:var(--p1); } .chip.p2 { background:var(--p2); }
+  .chip { padding:4px 10px; border-radius:999px; color:#fff; font-size:.9rem; background:var(--c); }
   .row { display:flex; gap:8px; justify-content:center; align-items:center; flex-wrap:wrap; }
   .row label { font-size:.9rem; color:var(--mute); }
   .row select { padding:6px; border-radius:8px; border:1px solid #d9cfb9; }
@@ -45,7 +44,7 @@
   .sep { text-align:center; color:var(--mute); margin:14px 0; }
   #overlay { position:fixed; inset:0; background:#000a; display:none; align-items:center; justify-content:center; padding:16px; }
   #overlay.show { display:flex; }
-  #overlay .box { background:var(--card); border-radius:20px; padding:28px; text-align:center; max-width:340px; }
+  #overlay .box { background:var(--card); border-radius:20px; padding:28px; text-align:center; max-width:340px; width:100%; max-height:100%; overflow:auto; }
   #overlay h2 { margin:0 0 8px; font-size:1.8rem; }
   .clap { font-size:4rem; display:inline-block; animation:clap .5s ease-in-out infinite alternate; }
   @keyframes clap { from { transform:scale(1) rotate(-8deg); } to { transform:scale(1.25) rotate(8deg); } }
@@ -71,18 +70,22 @@
 
   <!-- 대기실 -->
   <div id="waiting" class="card hidden">
-    <div class="hint">친구에게 이 코드를 알려주세요</div>
+    <div class="hint">친구들에게 이 코드를 알려주세요 (최대 8명)</div>
     <div class="code" id="roomCode"></div>
-    <div class="hint">친구가 입장하면 자동으로 시작돼요…</div>
+    <div class="plist" id="waitList"></div>
+    <div class="row" style="margin-top:14px">
+      <label id="limitWrap">제한시간
+        <select id="limit"><option>10</option><option selected>15</option><option>20</option><option>30</option><option value="0">없음</option></select>초
+      </label>
+      <button id="start">게임 시작</button>
+    </div>
+    <div class="hint" id="waitHint" style="margin-top:10px"></div>
   </div>
 
   <!-- 게임 -->
   <div id="game" class="hidden">
     <div class="card">
-      <div class="players">
-        <div class="player p1" id="pl0"><div class="nm" id="name0"></div><div class="score" id="score0">0</div></div>
-        <div class="player p2" id="pl1"><div class="nm" id="name1"></div><div class="score" id="score1">0</div></div>
-      </div>
+      <div class="plist" id="plist"></div>
       <div class="timer"><div id="bar"></div></div>
       <div class="current" id="current">시작!</div>
       <div class="hint" id="hint"></div>
@@ -92,12 +95,7 @@
       </form>
     </div>
     <div class="card"><div class="words" id="words"></div></div>
-    <div class="row">
-      <label id="limitWrap">제한시간
-        <select id="limit"><option>10</option><option selected>15</option><option>20</option><option>30</option><option value="0">없음</option></select>초
-      </label>
-      <button class="ghost" id="giveup">기권</button>
-    </div>
+    <div class="row"><button class="ghost" id="giveup">기권</button></div>
   </div>
 </main>
 
@@ -106,7 +104,9 @@
   <div class="clap" id="clap">👏👏👏</div>
   <div class="cheer" id="cheer"></div>
   <h2 id="winTitle"></h2><p id="winMsg"></p>
+  <div class="plist" id="resultList" style="margin:12px 0"></div>
   <button id="again">한 판 더!</button>
+  <div class="hint" id="againHint"></div>
 </div></div>
 
 <script>
@@ -115,11 +115,12 @@ const DUEUM = {'녀':'여','뇨':'요','뉴':'유','니':'이','랴':'야','려'
                '라':'나','래':'내','로':'노','뢰':'뇌','루':'누','르':'느','락':'낙','란':'난','람':'남','랑':'낭','령':'영','록':'녹','론':'논','롱':'농','릉':'능','림':'임','립':'입','력':'역','련':'연','렬':'열','렴':'염','렵':'엽','륙':'육','륜':'윤','률':'율','륭':'융','륵':'늑','름':'늠','릇':'늣','릎':'늪'};
 const HANGUL = /^[가-힣]{2,}$/;
 const PREFIX = 'wordchain-kr-';
+const COLORS = ['#e0674f', '#3f8f8b', '#d4a017', '#7b5ea7', '#3a78c2', '#c2578f', '#6f8f2f', '#8a6a4f'];
+const MAX = 8;
 
-let peer, conn, isHost = false, me = 0;
-let S = null;              // 공유 게임 상태 (호스트가 관리, 게스트는 수신)
-let deadline = 0, limitMs = 0, tick = null;
-let names = ['', ''];
+let peer, hostConn = null, conns = {}, isHost = false, myId = '';
+let S = null;                      // 공유 상태: 호스트가 관리, 게스트는 수신
+let deadline = 0, limitMs = 0, tick = null, colorSeq = 0;
 
 function allowed(ch) {
   const s = new Set([ch]);
@@ -129,7 +130,8 @@ function allowed(ch) {
 }
 function hint(msg, err) { $('hint').textContent = msg; $('hint').className = 'hint' + (err ? ' err' : ''); }
 function show(id) { for (const x of ['lobby', 'waiting', 'game']) $(x).classList.toggle('hidden', x !== id); }
-function myName() { return $('myname').value.trim() || '플레이어'; }
+function myName() { return $('myname').value.trim().slice(0, 8) || '플레이어'; }
+const meIdx = () => S ? S.players.findIndex(p => p.id === myId) : -1;
 
 /* ---------- 연결 ---------- */
 function makeCode() {
@@ -138,7 +140,7 @@ function makeCode() {
 }
 
 $('create').onclick = () => {
-  isHost = true; me = 0; names[0] = myName();
+  isHost = true; myId = 'host';
   const code = makeCode();
   $('lobbyMsg').textContent = '방 만드는 중…';
   peer = new Peer(PREFIX + code);
@@ -146,142 +148,199 @@ $('create').onclick = () => {
     if (e.type === 'unavailable-id') return $('create').click();      // 코드 중복 → 재시도
     $('lobbyMsg').textContent = '연결 오류: ' + e.type;
   });
-  peer.on('open', () => { $('roomCode').textContent = code; show('waiting'); });
+  peer.on('open', () => {
+    $('roomCode').textContent = code;
+    S = { phase: 'lobby', players: [newPlayer('host', myName())], words: [], turn: 0, limit: 15,
+          loser: -1, note: '' };
+    publish();
+  });
   peer.on('connection', c => {
-    if (conn) return c.close();                                        // 2명만
-    conn = c; bind(c);
+    c.on('data', m => onGuestMsg(c, m));
+    c.on('close', () => removePlayer(c.peer));
   });
 };
 
 $('join').onclick = () => {
   const code = $('joincode').value.trim().toUpperCase();
   if (code.length !== 4) return ($('lobbyMsg').textContent = '코드 4자리를 입력하세요');
-  isHost = false; me = 1; names[1] = myName();
+  isHost = false;
   $('lobbyMsg').textContent = '입장 중…';
   peer = new Peer();
   peer.on('error', e => $('lobbyMsg').textContent = e.type === 'peer-unavailable' ? '해당 방을 찾을 수 없어요' : '연결 오류: ' + e.type);
-  peer.on('open', () => {
-    conn = peer.connect(PREFIX + code, { reliable: true });
-    bind(conn);
+  peer.on('open', id => {
+    myId = id;
+    hostConn = peer.connect(PREFIX + code, { reliable: true });
+    hostConn.on('open', () => hostConn.send({ t: 'hello', name: myName() }));
+    hostConn.on('data', onHostMsg);
+    hostConn.on('close', () => {
+      if (!S) return ($('lobbyMsg').textContent = '연결에 실패했어요');
+      clearInterval(tick);
+      $('submit').disabled = true;
+      showEnd('방장이 나갔어요', '연결이 끊겨 게임이 종료됐어요', 'closed');
+    });
   });
 };
 
-function bind(c) {
-  c.on('open', () => {
-    if (isHost) return;                       // 호스트는 게스트의 hello를 기다림
-    send({ t: 'hello', name: names[1] });
-  });
-  c.on('data', onMsg);
-  c.on('close', () => {
-    if (!S || S.over) return;
-    clearInterval(tick);
-    hint('상대와 연결이 끊겼어요', true);
-    $('submit').disabled = true;
-    showEnd('상대가 나갔어요', '연결이 끊겨 게임이 종료됐어요', false);
-  });
-}
-const send = m => conn && conn.open && conn.send(m);
-
-/* ---------- 메시지 처리 ---------- */
-function onMsg(m) {
-  if (isHost) {
-    if (m.t === 'hello') { names[1] = String(m.name || '플레이어').slice(0, 8); startGame(true); }
-    else if (m.t === 'word') { const err = submit(1, m.w); if (err) send({ t: 'err', msg: err }); }
-    else if (m.t === 'giveup') giveUp(1);
-    else if (m.t === 'again') startGame(false);
-  } else {
-    if (m.t === 'state') apply(m.s);
-    else if (m.t === 'err') hint(m.msg, true);
-  }
+function onHostMsg(m) {
+  if (m.t === 'state') apply(m.s);
+  else if (m.t === 'err') hint(m.msg, true);
+  else if (m.t === 'full') { $('lobbyMsg').textContent = m.msg; show('lobby'); }
 }
 
 /* ---------- 호스트: 게임 로직 ---------- */
-function startGame(first) {
-  if (first) S = { scores: [0, 0] };
-  const limit = +$('limit').value;
-  S = { ...S, names: [...names], words: [], turn: 0, over: false, limit, msg: '', winner: null,
-        left: limit * 1000 };
-  armTimer(); publish();
+function newPlayer(id, name) {
+  return { id, name: String(name || '플레이어').slice(0, 8), color: COLORS[colorSeq++ % COLORS.length], score: 0, left: false };
 }
 function publish() {
   S.left = limitMs ? Math.max(0, deadline - Date.now()) : 0;
-  send({ t: 'state', s: S });
+  for (const c of Object.values(conns)) if (c.open) c.send({ t: 'state', s: S });
   apply(S);
 }
-function armTimer() {
-  limitMs = S.limit * 1000;
-  deadline = Date.now() + limitMs;
+function armTimer() { limitMs = S.limit * 1000; deadline = Date.now() + limitMs; }
+const active = () => S.players.map((p, i) => p.left ? -1 : i).filter(i => i >= 0);
+function nextActive(from) {
+  const n = S.players.length;
+  for (let i = 1; i <= n; i++) { const j = (from + i) % n; if (!S.players[j].left) return j; }
+  return from;
+}
+
+function onGuestMsg(c, m) {
+  const idx = S.players.findIndex(p => p.id === c.peer);
+  if (m.t === 'hello') {
+    if (S.phase === 'play') return reject(c, '게임이 진행 중이에요. 끝난 뒤 다시 들어오세요');
+    if (S.players.length >= MAX) return reject(c, '방이 가득 찼어요 (최대 8명)');
+    if (idx >= 0) return;
+    conns[c.peer] = c;
+    S.players.push(newPlayer(c.peer, m.name));
+    publish();
+  } else if (idx < 0) return;
+  else if (m.t === 'word') { const err = submit(idx, m.w); if (err) c.send({ t: 'err', msg: err }); }
+  else if (m.t === 'giveup') lose(idx, `${S.players[idx].name} 기권!`);
+  else if (m.t === 'start' || m.t === 'again') { /* 시작은 방장만 */ }
+}
+function reject(c, msg) { c.send({ t: 'full', msg }); setTimeout(() => c.close(), 300); }
+
+function removePlayer(id) {
+  delete conns[id];
+  if (!S) return;
+  const idx = S.players.findIndex(p => p.id === id);
+  if (idx < 0) return;
+  if (S.phase === 'play') {
+    S.players[idx].left = true;
+    if (active().length < 2) return endRound(-1, '인원이 부족해서 끝났어요');
+    if (S.turn === idx) return lose(idx, `${S.players[idx].name} 나감!`);
+    publish();
+  } else { S.players.splice(idx, 1); publish(); }
+}
+
+function startGame() {
+  S.players = S.players.filter(p => !p.left);
+  if (S.players.length < 2) return;
+  S.limit = +$('limit').value;
+  S.phase = 'play'; S.words = []; S.loser = -1; S.note = '';
+  S.turn = Math.floor(Math.random() * S.players.length);
+  armTimer(); publish();
 }
 function submit(p, w) {
-  if (!S || S.over) return '';
-  if (S.turn !== p) return '상대 차례예요';
+  if (!S || S.phase !== 'play') return '';
+  if (S.turn !== p) return '내 차례가 아니에요';
   w = String(w).trim();
   if (!HANGUL.test(w)) return '2글자 이상의 한글 단어만 가능해요';
   const last = S.words.length ? S.words[S.words.length - 1].w.slice(-1) : null;
   if (last && !allowed(last).has(w[0])) return `'${last}'(으)로 시작해야 해요`;
-  if (S.words.some(x => x.w === w)) return finish(1 - p, `${names[p]}: '${w}'은(는) 이미 나온 단어예요!`), '';
-  S.words.push({ w, p });
-  S.turn = 1 - p; armTimer(); publish();
+  if (S.words.some(x => x.w === w)) return lose(p, `${S.players[p].name}: '${w}'은(는) 이미 나온 단어예요!`), '';
+  S.words.push({ w, c: S.players[p].color });
+  S.turn = nextActive(p); S.note = ''; armTimer(); publish();
   return '';
 }
-function giveUp(p) { if (S && !S.over) finish(1 - p, `${names[p]} 기권!`); }
-function finish(winner, msg) {
-  S.over = true; S.winner = winner; S.msg = msg; S.scores[winner]++;
+// 꼴등(loser) 한 명만 지고, 나머지 전원이 1점
+function lose(idx, msg) { if (S && S.phase === 'play') endRound(idx, msg); }
+function endRound(loser, msg) {
+  S.phase = 'over'; S.loser = loser; S.note = msg;
+  if (loser >= 0) S.players.forEach((p, i) => { if (i !== loser && !p.left) p.score++; });
   publish();
 }
 
+$('start').onclick = () => { if (isHost) startGame(); };
+$('again').onclick = () => { if (isHost) startGame(); };
+
 /* ---------- 공통: 화면 반영 ---------- */
+function renderPlayers(el, list, opts = {}) {
+  el.replaceChildren();
+  list.forEach((p, i) => {
+    const d = document.createElement('div');
+    d.className = 'pl' + (opts.turn === i ? ' active' : '') + (p.left ? ' gone' : '');
+    d.style.setProperty('--c', p.color);
+    const nm = document.createElement('div'); nm.className = 'nm';
+    nm.textContent = p.name + (p.id === myId ? ' (나)' : '') + (opts.loser === i ? ' 💀' : '');
+    const sc = document.createElement('div'); sc.className = 'sc'; sc.textContent = opts.noScore ? '' : p.score;
+    d.append(nm, sc); el.appendChild(d);
+  });
+}
+
 function apply(s) {
-  S = s; names = s.names;
-  show('game');
+  S = s;
   limitMs = s.limit * 1000;
   deadline = Date.now() + s.left;
-  $('limitWrap').classList.toggle('hidden', !isHost);
-  $('name0').textContent = names[0] + (me === 0 ? ' (나)' : '');
-  $('name1').textContent = names[1] + (me === 1 ? ' (나)' : '');
-  $('score0').textContent = s.scores[0]; $('score1').textContent = s.scores[1];
-  $('pl0').classList.toggle('active', !s.over && s.turn === 0);
-  $('pl1').classList.toggle('active', !s.over && s.turn === 1);
+  clearInterval(tick);
 
-  $('words').innerHTML = '';
+  if (s.phase === 'lobby') {
+    show('waiting');
+    $('overlay').classList.remove('show');
+    renderPlayers($('waitList'), s.players, { noScore: true });
+    $('limitWrap').classList.toggle('hidden', !isHost);
+    $('start').classList.toggle('hidden', !isHost);
+    $('start').disabled = s.players.length < 2;
+    $('waitHint').textContent = isHost
+      ? (s.players.length < 2 ? '친구가 들어오면 시작할 수 있어요' : `${s.players.length}명 입장! 시작하세요`)
+      : '방장이 시작하길 기다리는 중…';
+    return;
+  }
+
+  show('game');
+  renderPlayers($('plist'), s.players, { turn: s.phase === 'play' ? s.turn : -1, loser: s.loser });
+  $('words').replaceChildren();
   for (const x of s.words) {
     const c = document.createElement('span');
-    c.className = 'chip p' + (x.p + 1); c.textContent = x.w;
+    c.className = 'chip'; c.style.setProperty('--c', x.c); c.textContent = x.w;
     $('words').appendChild(c);
   }
   $('words').scrollTop = 1e6;
 
   const last = s.words.length ? s.words[s.words.length - 1].w.slice(-1) : null;
   $('current').textContent = last || '시작!';
-  const mine = !s.over && s.turn === me;
-  $('word').disabled = !mine; $('submit').disabled = !mine;
+  const play = s.phase === 'play';
+  const mine = play && s.turn === meIdx();
+  $('word').disabled = !mine; $('submit').disabled = !mine; $('giveup').disabled = !play;
   if (mine) $('word').focus();
-  hint(s.over ? '' : mine ? `내 차례!${last && DUEUM[last] ? ` (${DUEUM[last]}도 가능)` : ''}` : `${names[s.turn]} 차례…`);
+  hint(!play ? '' : mine ? `내 차례!${last && DUEUM[last] ? ` (${DUEUM[last]}도 가능)` : ''}` : `${s.players[s.turn].name} 차례…`);
 
-  clearInterval(tick);
-  if (s.over) { $('bar').style.width = '0%'; showEnd(`🎉 ${names[s.winner]} 승리!`, s.msg, true); }
-  else {
-    $('overlay').classList.remove('show');
-    tick = setInterval(() => {
-      if (!limitMs) return $('bar').style.width = '100%';
-      const r = deadline - Date.now();
-      $('bar').style.width = Math.max(0, r / limitMs * 100) + '%';
-      if (r <= 0 && isHost) { clearInterval(tick); finish(1 - S.turn, `${names[S.turn]} 시간 초과!`); }
-    }, 100);
-  }
+  if (!play) { $('bar').style.width = '0%'; showEnd(null, s.note, 'over'); return; }
+  $('overlay').classList.remove('show');
+  tick = setInterval(() => {
+    if (!limitMs) return $('bar').style.width = '100%';
+    const r = deadline - Date.now();
+    $('bar').style.width = Math.max(0, r / limitMs * 100) + '%';
+    if (r <= 0 && isHost) { clearInterval(tick); lose(S.turn, `${S.players[S.turn].name} 시간 초과!`); }
+  }, 100);
 }
-function showEnd(title, msg, canRestart) {
-  const won = !!(S && S.over && S.winner === me && canRestart);
-  $('clap').classList.toggle('hidden', !won);
-  $('cheer').classList.toggle('hidden', !won);
-  const ph = $('photo');
-  if (won) {
-    ph.onload = () => ph.classList.remove('hidden');
-    ph.src = 'winner.jpg';
-  } else { ph.classList.add('hidden'); ph.removeAttribute('src'); }
+
+function showEnd(title, msg, kind) {
+  const i = meIdx();
+  const winner = kind === 'over' && S.loser >= 0 && i >= 0 && i !== S.loser && !S.players[i].left;
+  const loserName = kind === 'over' && S.loser >= 0 ? S.players[S.loser].name : '';
+  $('clap').classList.toggle('hidden', !winner);
+  $('cheer').classList.toggle('hidden', !winner);
   $('cheer').textContent = '승리를 진심으로 축하합니다!';
-  $('winTitle').textContent = title; $('winMsg').textContent = msg;
-  $('again').classList.toggle('hidden', !canRestart);
+  const ph = $('photo');
+  if (winner) { ph.onload = () => ph.classList.remove('hidden'); ph.src = 'winner.jpg'; }
+  else { ph.classList.add('hidden'); ph.removeAttribute('src'); }
+  $('winTitle').textContent = title || (S.loser < 0 ? '무승부' : i === S.loser ? '💀 꼴등!' : `🎉 ${loserName} 꼴등! 나머지 +1점`);
+  $('winMsg').textContent = msg;
+  if (kind === 'over') renderPlayers($('resultList'), S.players, { loser: S.loser });
+  else $('resultList').replaceChildren();
+  $('again').classList.toggle('hidden', !(kind === 'over' && isHost));
+  $('againHint').textContent = kind === 'over' && !isHost ? '방장이 다시 시작하길 기다리는 중…' : '';
   $('overlay').classList.add('show');
 }
 
@@ -291,11 +350,10 @@ $('form').addEventListener('submit', e => {
   const w = $('word').value.trim();
   if (!w) return;
   $('word').value = '';
-  if (isHost) { const err = submit(0, w); if (err) hint(err, true); }
-  else send({ t: 'word', w });
+  if (isHost) { const err = submit(meIdx(), w); if (err) hint(err, true); }
+  else hostConn.send({ t: 'word', w });
 });
-$('giveup').onclick = () => isHost ? giveUp(0) : send({ t: 'giveup' });
-$('again').onclick = () => isHost ? startGame(false) : send({ t: 'again' });
+$('giveup').onclick = () => isHost ? lose(meIdx(), `${S.players[meIdx()].name} 기권!`) : hostConn.send({ t: 'giveup' });
 </script>
 </body>
 </html>
