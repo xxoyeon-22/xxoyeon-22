@@ -367,12 +367,15 @@ const guessers = () => S.players.filter((p, i) => i !== S.drawer && !p.left);
 function onGuestMsg(c, m) {
   const idx = S.players.findIndex(p => p.id === c.peer);
   if (m.t === 'hello') {
-    if (S.players.length >= MAX) return reject(c, '방이 가득 찼어요 (최대 8명)');
+    if (S.players.filter(x => !x.left).length >= MAX) return reject(c, '방이 가득 찼어요 (최대 8명)');
     if (idx >= 0) return;
     conns[c.peer] = c;
     const p = newPlayer(c.peer, m.name);
     S.players.push(p);
-    if (S.phase === 'play') say({ sys: true, t: `${p.name} 님이 들어왔어요` });
+    if (S.phase === 'play' || S.phase === 'reveal') {          // 진행 중에 들어오면 남은 순서 끝에 한 번 그릴 차례를 줌
+      say({ sys: true, t: `${p.name} 님이 중간에 들어왔어요` });
+      H.queue.push(p.id); S.total++;
+    }
     publish();
     if (H.segs.length) c.send({ t: 'canvas', segs: H.segs });
     return;
