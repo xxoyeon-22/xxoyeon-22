@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>끝말잇기 대결</title>
+<style>
+  :root { --bg:#fbf6ea; --card:#fffdf7; --ink:#3b3226; --p1:#e0674f; --p2:#3f8f8b; --mute:#9a8f7e; }
+  * { box-sizing:border-box; }
+  body { margin:0; min-height:100vh; background:var(--bg); color:var(--ink);
+         font-family:-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;
+         display:flex; justify-content:center; padding:16px; }
+  main { width:100%; max-width:520px; }
+  h1 { text-align:center; margin:8px 0 16px; }
+  .card { background:var(--card); border-radius:16px; padding:16px; box-shadow:0 2px 10px #0001; margin-bottom:12px; }
+  .players { display:flex; gap:10px; }
+  .player { flex:1; text-align:center; padding:10px; border-radius:12px; border:3px solid transparent; background:#0000000a; }
+  .player.active { border-color:currentColor; background:#fff; }
+  .player input { width:100%; text-align:center; border:none; background:transparent; font-size:1rem; font-weight:700; color:inherit; }
+  .p1 { color:var(--p1); } .p2 { color:var(--p2); }
+  .score { font-size:1.6rem; font-weight:800; }
+  .timer { height:8px; background:#0000001a; border-radius:4px; overflow:hidden; margin-top:12px; }
+  .timer > div { height:100%; width:100%; background:var(--ink); transition:width .1s linear; }
+  .current { text-align:center; font-size:2.4rem; font-weight:800; margin:10px 0 4px; letter-spacing:.1em; }
+  .hint { text-align:center; color:var(--mute); font-size:.9rem; min-height:1.3em; }
+  .hint.err { color:#c0392b; font-weight:700; }
+  form { display:flex; gap:8px; margin-top:10px; }
+  form input { flex:1; font-size:1.2rem; padding:12px; border-radius:10px; border:2px solid #d9cfb9; background:#fff; }
+  button { font-size:1rem; padding:12px 18px; border:none; border-radius:10px; background:var(--ink); color:#fff; cursor:pointer; }
+  button.ghost { background:#0000001a; color:var(--ink); }
+  .words { display:flex; flex-wrap:wrap; gap:6px; max-height:180px; overflow:auto; }
+  .chip { padding:4px 10px; border-radius:999px; color:#fff; font-size:.9rem; }
+  .chip.p1 { background:var(--p1); } .chip.p2 { background:var(--p2); }
+  .row { display:flex; gap:8px; justify-content:center; align-items:center; flex-wrap:wrap; }
+  .row label { font-size:.9rem; color:var(--mute); }
+  .row select { padding:6px; border-radius:8px; border:1px solid #d9cfb9; }
+  #overlay { position:fixed; inset:0; background:#000a; display:none; align-items:center; justify-content:center; padding:16px; }
+  #overlay.show { display:flex; }
+  #overlay .box { background:var(--card); border-radius:20px; padding:28px; text-align:center; max-width:340px; }
+  #overlay h2 { margin:0 0 8px; font-size:1.8rem; }
+</style>
+</head>
+<body>
+<main>
+  <h1>🔤 끝말잇기 대결</h1>
+
+  <div class="card">
+    <div class="players">
+      <div class="player p1" id="pl0"><input id="name0" value="플레이어 1" maxlength="8"><div class="score" id="score0">0</div></div>
+      <div class="player p2" id="pl1"><input id="name1" value="플레이어 2" maxlength="8"><div class="score" id="score1">0</div></div>
+    </div>
+    <div class="timer"><div id="bar"></div></div>
+    <div class="current" id="current">시작!</div>
+    <div class="hint" id="hint">첫 단어를 입력하세요 (2글자 이상 한글)</div>
+    <form id="form" autocomplete="off">
+      <input id="word" placeholder="단어 입력" autofocus>
+      <button>제출</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <div class="words" id="words"></div>
+  </div>
+
+  <div class="row">
+    <label>제한시간
+      <select id="limit"><option>10</option><option selected>15</option><option>20</option><option>30</option><option value="0">없음</option></select>초
+    </label>
+    <button class="ghost" id="giveup">기권</button>
+    <button class="ghost" id="restart">새 게임</button>
+  </div>
+</main>
+
+<div id="overlay"><div class="box">
+  <h2 id="winTitle"></h2><p id="winMsg"></p>
+  <button id="again">한 판 더!</button>
+</div></div>
+
+<script>
+const $ = id => document.getElementById(id);
+// 두음법칙: 끝 글자가 바뀌어도 이어갈 수 있는 첫 글자들
+const DUEUM = {'녀':'여','뇨':'요','뉴':'유','니':'이','랴':'야','려':'여','례':'예','료':'요','류':'유','리':'이',
+               '라':'나','래':'내','로':'노','뢰':'뇌','루':'누','르':'느','락':'낙','란':'난','람':'남','랑':'낭','령':'영','록':'녹','론':'논','롱':'농','릉':'능','림':'임','립':'입','력':'역','련':'연','렬':'열','렴':'염','렵':'엽','륙':'육','륜':'윤','률':'율','륭':'융','륵':'늑','름':'늠','릇':'늣','릎':'늪'};
+const HANGUL = /^[가-힣]{2,}$/;
+
+let turn, used, timerId, left, over, scores = [0, 0];
+
+function name(i) { return $('name' + i).value.trim() || `플레이어 ${i + 1}`; }
+function allowed(ch) {
+  const s = new Set([ch]);
+  if (DUEUM[ch]) s.add(DUEUM[ch]);
+  for (const [k, v] of Object.entries(DUEUM)) if (v === ch) s.add(k);
+  return s;
+}
+
+function newGame() {
+  turn = 0; used = []; over = false;
+  $('words').innerHTML = ''; $('current').textContent = '시작!';
+  hint('첫 단어를 입력하세요 (2글자 이상 한글)');
+  $('overlay').classList.remove('show');
+  render(); startTimer(); $('word').focus();
+}
+function render() {
+  $('pl0').classList.toggle('active', turn === 0);
+  $('pl1').classList.toggle('active', turn === 1);
+  $('score0').textContent = scores[0]; $('score1').textContent = scores[1];
+}
+function hint(msg, err) { $('hint').textContent = msg; $('hint').className = 'hint' + (err ? ' err' : ''); }
+
+function startTimer() {
+  clearInterval(timerId);
+  const limit = +$('limit').value;
+  if (!limit) { $('bar').style.width = '100%'; return; }
+  left = limit * 10;
+  $('bar').style.width = '100%';
+  timerId = setInterval(() => {
+    left--;
+    $('bar').style.width = (left / (limit * 10) * 100) + '%';
+    if (left <= 0) end(1 - turn, `${name(turn)} 시간 초과!`);
+  }, 100);
+}
+
+function end(winner, msg) {
+  if (over) return;
+  over = true; clearInterval(timerId);
+  scores[winner]++; render();
+  $('winTitle').textContent = `🎉 ${name(winner)} 승리!`;
+  $('winMsg').textContent = msg;
+  $('overlay').classList.add('show');
+}
+
+$('form').addEventListener('submit', e => {
+  e.preventDefault();
+  if (over) return;
+  const w = $('word').value.trim();
+  if (!HANGUL.test(w)) return hint('2글자 이상의 한글 단어만 가능해요', true);
+  if (used.length) {
+    const last = used[used.length - 1].slice(-1);
+    if (!allowed(last).has(w[0])) return hint(`'${last}'(으)로 시작해야 해요`, true);
+  }
+  if (used.includes(w)) return end(1 - turn, `${name(turn)}: '${w}'은(는) 이미 나온 단어예요!`);
+  used.push(w);
+  const chip = document.createElement('span');
+  chip.className = 'chip p' + (turn + 1); chip.textContent = w;
+  $('words').appendChild(chip); $('words').scrollTop = 1e6;
+  const tail = w.slice(-1);
+  $('current').textContent = tail;
+  $('word').value = '';
+  turn = 1 - turn;
+  hint(`${name(turn)} 차례${DUEUM[tail] ? ` (${DUEUM[tail]}도 가능)` : ''}`);
+  render(); startTimer();
+});
+
+$('giveup').onclick = () => { if (!over) end(1 - turn, `${name(turn)} 기권!`); };
+$('restart').onclick = () => { scores = [0, 0]; newGame(); };
+$('again').onclick = newGame;
+$('limit').onchange = () => { if (!over) startTimer(); };
+newGame();
+</script>
+</body>
+</html>
