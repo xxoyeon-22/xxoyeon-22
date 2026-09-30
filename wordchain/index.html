@@ -207,8 +207,7 @@ function nextActive(from) {
 function onGuestMsg(c, m) {
   const idx = S.players.findIndex(p => p.id === c.peer);
   if (m.t === 'hello') {
-    if (S.phase === 'play') return reject(c, '게임이 진행 중이에요. 끝난 뒤 다시 들어오세요');
-    if (S.players.length >= MAX) return reject(c, '방이 가득 찼어요 (최대 8명)');
+    if (S.players.filter(x => !x.left).length >= MAX) return reject(c, '방이 가득 찼어요 (최대 8명)');
     if (idx >= 0) return;
     conns[c.peer] = c;
     S.players.push(newPlayer(c.peer, m.name));
