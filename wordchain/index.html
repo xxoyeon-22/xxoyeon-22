@@ -4,6 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>끝말잇기 온라인 대결</title>
+<meta name="description" content="친구와 각자 기기에서 겨루는 끝말잇기. 방 코드로 바로 입장!">
+<meta property="og:type" content="website">
+<meta property="og:title" content="🔤 끝말잇기 온라인 대결">
+<meta property="og:description" content="방 코드로 친구와 바로 한 판!">
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <style>
   :root { --bg:#fbf6ea; --card:#fffdf7; --ink:#3b3226; --p1:#e0674f; --p2:#3f8f8b; --mute:#9a8f7e; }
@@ -98,7 +102,7 @@
 </main>
 
 <div id="overlay"><div class="box">
-  <img id="photo" src="winner.jpg" alt="" class="hidden" onload="this.classList.remove('hidden');$('clap').textContent='👏👏👏'">
+  <img id="photo" alt="" class="hidden">
   <div class="clap" id="clap">👏👏👏</div>
   <div class="cheer" id="cheer"></div>
   <h2 id="winTitle"></h2><p id="winMsg"></p>
@@ -270,7 +274,11 @@ function showEnd(title, msg, canRestart) {
   const won = !!(S && S.over && S.winner === me && canRestart);
   $('clap').classList.toggle('hidden', !won);
   $('cheer').classList.toggle('hidden', !won);
-  $('photo').style.display = won ? '' : 'none';
+  const ph = $('photo');
+  if (won) {
+    ph.onload = () => ph.classList.remove('hidden');
+    ph.src = 'winner.jpg';
+  } else { ph.classList.add('hidden'); ph.removeAttribute('src'); }
   $('cheer').textContent = '승리를 진심으로 축하합니다!';
   $('winTitle').textContent = title; $('winMsg').textContent = msg;
   $('again').classList.toggle('hidden', !canRestart);
