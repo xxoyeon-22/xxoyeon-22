@@ -1,0 +1,458 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>캐치마인드 온라인</title>
+<meta name="description" content="친구들과 각자 기기에서 그리고 맞히는 캐치마인드. 방 코드로 바로 입장!">
+<meta property="og:type" content="website">
+<meta property="og:title" content="🎨 캐치마인드 온라인">
+<meta property="og:description" content="방 코드로 친구들과 바로 한 판!">
+<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<style>
+  :root { --bg:#fbf6ea; --card:#fffdf7; --ink:#3b3226; --acc:#e0674f; --mute:#9a8f7e; }
+  * { box-sizing:border-box; }
+  body { margin:0; min-height:100vh; background:var(--bg); color:var(--ink);
+         font-family:-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;
+         display:flex; justify-content:center; padding:16px; }
+  main { width:100%; max-width:560px; }
+  h1 { text-align:center; margin:8px 0 16px; }
+  .card { background:var(--card); border-radius:16px; padding:14px; box-shadow:0 2px 10px #0001; margin-bottom:12px; }
+  .hidden { display:none !important; }
+  .plist { display:flex; flex-wrap:wrap; gap:6px; }
+  .pl { flex:1 1 84px; text-align:center; padding:6px; border-radius:12px; border:3px solid transparent; background:#0000000a; color:var(--c); min-width:0; }
+  .pl.drawer { border-color:currentColor; background:#fff; }
+  .pl.gone { opacity:.35; text-decoration:line-through; }
+  .pl .nm { font-weight:700; font-size:.9rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .pl .sc { font-size:1.2rem; font-weight:800; }
+  .timer { height:8px; background:#0000001a; border-radius:4px; overflow:hidden; margin-top:10px; }
+  .timer > div { height:100%; width:100%; background:var(--ink); }
+  .banner { text-align:center; font-size:1.7rem; font-weight:800; letter-spacing:.15em; margin:10px 0 6px; min-height:1.4em; }
+  .hint { text-align:center; color:var(--mute); font-size:.9rem; min-height:1.3em; }
+  .hint.err { color:#c0392b; font-weight:700; }
+  canvas { display:block; width:100%; aspect-ratio:3/2; background:#fff; border-radius:12px; border:2px solid #d9cfb9; touch-action:none; }
+  .tools { display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin-top:8px; justify-content:center; }
+  .sw { width:28px; height:28px; border-radius:50%; border:3px solid #fff; box-shadow:0 0 0 1px #0004; padding:0; }
+  .sw.on { box-shadow:0 0 0 3px var(--ink); }
+  .sz { padding:6px 10px; font-size:.85rem; }
+  .sz.on { background:var(--ink); color:#fff; }
+  form, .line { display:flex; gap:8px; margin-top:10px; }
+  input.t { flex:1; min-width:0; font-size:1.1rem; padding:11px; border-radius:10px; border:2px solid #d9cfb9; background:#fff; }
+  button { font-size:1rem; padding:11px 16px; border:none; border-radius:10px; background:var(--ink); color:#fff; cursor:pointer; }
+  button:disabled { opacity:.4; cursor:default; }
+  button.ghost { background:#0000001a; color:var(--ink); }
+  .chat { height:150px; overflow:auto; display:flex; flex-direction:column; gap:3px; font-size:.95rem; }
+  .chat .sys { color:var(--mute); font-size:.85rem; }
+  .chat .ok { font-weight:800; color:#2e8b57; }
+  .chat b { color:var(--c); }
+  .row { display:flex; gap:8px; justify-content:center; align-items:center; flex-wrap:wrap; }
+  .row label { font-size:.9rem; color:var(--mute); }
+  .row select { padding:6px; border-radius:8px; border:1px solid #d9cfb9; }
+  .code { text-align:center; font-size:2.6rem; font-weight:800; letter-spacing:.2em; margin:8px 0; }
+  .sep { text-align:center; color:var(--mute); margin:14px 0; }
+  #overlay { position:fixed; inset:0; background:#000a; display:none; align-items:center; justify-content:center; padding:16px; }
+  #overlay.show { display:flex; }
+  #overlay .box { background:var(--card); border-radius:20px; padding:24px; text-align:center; max-width:340px; width:100%; max-height:100%; overflow:auto; }
+  #overlay h2 { margin:0 0 10px; font-size:1.8rem; }
+  .rank { display:flex; flex-direction:column; gap:6px; margin:12px 0; text-align:left; }
+  .rank div { display:flex; justify-content:space-between; padding:8px 12px; border-radius:10px; background:#0000000a; color:var(--c); font-weight:700; }
+</style>
+</head>
+<body>
+<main>
+  <h1>🎨 캐치마인드 온라인</h1>
+
+  <!-- 로비 -->
+  <div id="lobby" class="card">
+    <input class="t" id="myname" style="width:100%" placeholder="내 이름" maxlength="8">
+    <div class="line"><button id="create" style="flex:1">방 만들기</button></div>
+    <div class="sep">또는 친구가 알려준 코드로 입장</div>
+    <div class="line">
+      <input class="t" id="joincode" placeholder="방 코드 4자리" maxlength="4" style="text-transform:uppercase">
+      <button id="join">입장</button>
+    </div>
+    <div class="hint" id="lobbyMsg" style="margin-top:12px"></div>
+  </div>
+
+  <!-- 대기실 -->
+  <div id="waiting" class="card hidden">
+    <div class="hint">친구들에게 이 코드를 알려주세요 (최대 8명)</div>
+    <div class="code" id="roomCode"></div>
+    <div class="plist" id="waitList"></div>
+    <div class="row" style="margin-top:14px">
+      <label id="limitWrap">한 문제당
+        <select id="limit"><option>40</option><option selected>60</option><option>90</option></select>초
+      </label>
+      <button id="start">게임 시작</button>
+    </div>
+    <div class="hint" id="waitHint" style="margin-top:10px"></div>
+  </div>
+
+  <!-- 게임 -->
+  <div id="game" class="hidden">
+    <div class="card">
+      <div class="plist" id="plist"></div>
+      <div class="timer"><div id="bar"></div></div>
+      <div class="banner" id="banner"></div>
+      <div class="hint" id="hint"></div>
+      <canvas id="cv" width="600" height="400"></canvas>
+      <div class="tools hidden" id="tools"></div>
+    </div>
+    <div class="card">
+      <div class="chat" id="chat"></div>
+      <form id="form" autocomplete="off">
+        <input class="t" id="guess" placeholder="정답 입력" maxlength="20">
+        <button id="send">전송</button>
+      </form>
+    </div>
+  </div>
+</main>
+
+<div id="overlay"><div class="box">
+  <h2>🏆 게임 끝!</h2>
+  <div class="rank" id="rank"></div>
+  <button id="again">한 판 더!</button>
+  <div class="hint" id="againHint"></div>
+</div></div>
+
+<script>
+const $ = id => document.getElementById(id);
+const PREFIX = 'catchmind-kr-';
+const COLORS = ['#e0674f', '#3f8f8b', '#d4a017', '#7b5ea7', '#3a78c2', '#c2578f', '#6f8f2f', '#8a6a4f'];
+const PEN = ['#000000', '#e0374f', '#f28c28', '#f2c94c', '#2e9d5b', '#2d7be0', '#8e44ad', '#ffffff'];
+const MAX = 8;
+const WORDS = `사과 바나나 수박 딸기 포도 토마토 당근 옥수수 김밥 라면 피자 햄버거 치킨 아이스크림 케이크 도넛 계란 빵
+강아지 고양이 토끼 호랑이 사자 코끼리 기린 원숭이 펭귄 거북이 물고기 상어 고래 나비 개구리 뱀 오리 닭 돼지 소 말 곰 다람쥐
+자동차 비행기 기차 자전거 버스 배 로켓 오토바이 헬리콥터 트럭 지하철 신호등
+안경 모자 신발 양말 장갑 우산 가방 시계 반지 목걸이 청바지 티셔츠
+의자 책상 침대 냉장고 텔레비전 선풍기 전화기 컴퓨터 열쇠 가위 칼 숟가락 젓가락 컵 냄비 비누 칫솔 거울 문 창문 계단 시계탑
+해 달 별 구름 무지개 눈사람 번개 나무 꽃 산 바다 섬 불 우주선 화산 폭포
+축구공 야구방망이 피아노 기타 북 마이크 카메라 풍선 선물 촛불 깃발 보물상자 왕관 마법사 유령 해적 공룡 로봇 눈사람 천사 소방차`
+  .split(/\s+/).filter(Boolean);
+
+let peer, hostConn = null, conns = {}, isHost = false, myId = '';
+let S = null;                              // 공유 상태
+let H = { word: '', segs: [], queue: [] }; // 호스트만 아는 정보 (정답, 그림 기록)
+let myWord = null;                         // {w, r}: 내가 그리는 사람일 때의 제시어
+let deadline = 0, limitMs = 0, tick = null, colorSeq = 0, lastRound = -1, hintShown = false;
+let pen = { color: PEN[0], size: 4 };
+
+const hint = (m, err) => { $('hint').textContent = m; $('hint').className = 'hint' + (err ? ' err' : ''); };
+function show(id) { for (const x of ['lobby', 'waiting', 'game']) $(x).classList.toggle('hidden', x !== id); }
+const myName = () => $('myname').value.trim().slice(0, 8) || '플레이어';
+const meIdx = () => S ? S.players.findIndex(p => p.id === myId) : -1;
+const amDrawer = () => S && S.phase === 'play' && S.drawer === meIdx();
+
+/* ---------- 그림판 ---------- */
+const cv = $('cv'), ctx = cv.getContext('2d');
+function clearCanvas() { ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, cv.width, cv.height); }
+function drawSeg(s) {
+  ctx.strokeStyle = s[4]; ctx.lineWidth = s[5]; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(s[0] * cv.width, s[1] * cv.height); ctx.lineTo(s[2] * cv.width, s[3] * cv.height); ctx.stroke();
+}
+let last = null;
+function pos(e) {
+  const r = cv.getBoundingClientRect();
+  return [+((e.clientX - r.left) / r.width).toFixed(4), +((e.clientY - r.top) / r.height).toFixed(4)];
+}
+cv.addEventListener('pointerdown', e => { if (!amDrawer()) return; cv.setPointerCapture(e.pointerId); last = pos(e); emitSeg([...last, ...last, pen.color, pen.size]); });
+cv.addEventListener('pointermove', e => {
+  if (!last || !amDrawer()) return;
+  const p = pos(e); emitSeg([...last, ...p, pen.color, pen.size]); last = p;
+});
+for (const ev of ['pointerup', 'pointercancel']) cv.addEventListener(ev, () => last = null);
+
+function emitSeg(seg) {
+  drawSeg(seg);
+  if (isHost) { H.segs.push(seg); broadcast({ t: 'draw', seg }); }
+  else hostConn.send({ t: 'draw', seg });
+}
+function clearAll() {
+  clearCanvas();
+  if (isHost) { H.segs = []; broadcast({ t: 'clear' }); }
+  else hostConn.send({ t: 'clear' });
+}
+
+function buildTools() {
+  const t = $('tools'); t.replaceChildren();
+  PEN.forEach(c => {
+    const b = document.createElement('button'); b.className = 'sw' + (pen.color === c ? ' on' : ''); b.style.background = c;
+    b.title = c === '#ffffff' ? '지우개' : '';
+    b.onclick = () => { pen.color = c; buildTools(); }; t.appendChild(b);
+  });
+  [[3, '얇게'], [8, '보통'], [18, '굵게']].forEach(([s, n]) => {
+    const b = document.createElement('button'); b.className = 'ghost sz' + (pen.size === s ? ' on' : ''); b.textContent = n;
+    b.onclick = () => { pen.size = s; buildTools(); }; t.appendChild(b);
+  });
+  const c = document.createElement('button'); c.className = 'ghost sz'; c.textContent = '전체 지우기'; c.onclick = clearAll; t.appendChild(c);
+}
+
+/* ---------- 연결 ---------- */
+function makeCode() {
+  const c = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  return Array.from({ length: 4 }, () => c[Math.floor(Math.random() * c.length)]).join('');
+}
+const broadcast = (m, except) => { for (const [id, c] of Object.entries(conns)) if (c.open && id !== except) c.send(m); };
+
+$('create').onclick = () => {
+  isHost = true; myId = 'host';
+  const code = makeCode();
+  $('lobbyMsg').textContent = '방 만드는 중…';
+  peer = new Peer(PREFIX + code);
+  peer.on('error', e => {
+    if (e.type === 'unavailable-id') return $('create').click();
+    $('lobbyMsg').textContent = '연결 오류: ' + e.type;
+  });
+  peer.on('open', () => {
+    $('roomCode').textContent = code;
+    S = { phase: 'lobby', players: [newPlayer('host', myName())], drawer: -1, roundNo: 0, limit: 60,
+          hint: '', answer: '', note: '', chat: [], left: 0 };
+    setInterval(hostTick, 250);
+    publish();
+  });
+  peer.on('connection', c => {
+    c.on('data', m => onGuestMsg(c, m));
+    c.on('close', () => removePlayer(c.peer));
+  });
+};
+
+$('join').onclick = () => {
+  const code = $('joincode').value.trim().toUpperCase();
+  if (code.length !== 4) return ($('lobbyMsg').textContent = '코드 4자리를 입력하세요');
+  isHost = false;
+  $('lobbyMsg').textContent = '입장 중…';
+  peer = new Peer();
+  peer.on('error', e => $('lobbyMsg').textContent = e.type === 'peer-unavailable' ? '해당 방을 찾을 수 없어요' : '연결 오류: ' + e.type);
+  peer.on('open', id => {
+    myId = id;
+    hostConn = peer.connect(PREFIX + code, { reliable: true });
+    hostConn.on('open', () => hostConn.send({ t: 'hello', name: myName() }));
+    hostConn.on('data', onHostMsg);
+    hostConn.on('close', () => {
+      if (!S) return ($('lobbyMsg').textContent = '연결에 실패했어요');
+      clearInterval(tick); $('send').disabled = true;
+      hint('방장이 나가서 게임이 끝났어요', true);
+    });
+  });
+};
+
+function onHostMsg(m) {
+  if (m.t === 'state') apply(m.s);
+  else if (m.t === 'word') myWord = { w: m.w, r: m.r }, S && render();
+  else if (m.t === 'draw') drawSeg(m.seg);
+  else if (m.t === 'clear') clearCanvas();
+  else if (m.t === 'canvas') m.segs.forEach(drawSeg);
+  else if (m.t === 'err') hint(m.msg, true);
+  else if (m.t === 'full') { $('lobbyMsg').textContent = m.msg; show('lobby'); }
+}
+
+/* ---------- 호스트: 게임 로직 ---------- */
+function newPlayer(id, name) {
+  return { id, name: String(name || '플레이어').slice(0, 8), color: COLORS[colorSeq++ % COLORS.length], score: 0, solved: false, left: false };
+}
+function publish() {
+  S.left = Math.max(0, deadline - Date.now());
+  broadcast({ t: 'state', s: S });
+  apply(S);
+}
+const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const say = m => { S.chat.push(m); if (S.chat.length > 40) S.chat.shift(); };
+const guessers = () => S.players.filter((p, i) => i !== S.drawer && !p.left);
+
+function onGuestMsg(c, m) {
+  const idx = S.players.findIndex(p => p.id === c.peer);
+  if (m.t === 'hello') {
+    if (S.players.length >= MAX) return reject(c, '방이 가득 찼어요 (최대 8명)');
+    if (idx >= 0) return;
+    conns[c.peer] = c;
+    S.players.push(newPlayer(c.peer, m.name));
+    if (S.phase === 'play') say({ sys: true, t: `${S.players[S.players.length - 1].name} 님이 들어왔어요` });
+    publish();
+    if (H.segs.length) c.send({ t: 'canvas', segs: H.segs });
+    return;
+  }
+  if (idx < 0) return;
+  if (m.t === 'draw' && S.phase === 'play' && idx === S.drawer && Array.isArray(m.seg) && m.seg.length === 6) {
+    H.segs.push(m.seg); drawSeg(m.seg); broadcast({ t: 'draw', seg: m.seg }, c.peer);
+  } else if (m.t === 'clear' && S.phase === 'play' && idx === S.drawer) {
+    H.segs = []; clearCanvas(); broadcast({ t: 'clear' }, c.peer);
+  } else if (m.t === 'guess') guess(idx, m.w);
+}
+function reject(c, msg) { c.send({ t: 'full', msg }); setTimeout(() => c.close(), 300); }
+
+function removePlayer(id) {
+  delete conns[id];
+  if (!S) return;
+  const idx = S.players.findIndex(p => p.id === id);
+  if (idx < 0) return;
+  if (S.phase === 'lobby' || S.phase === 'over') { S.players.splice(idx, 1); return publish(); }
+  S.players[idx].left = true;
+  if (S.players.filter(p => !p.left).length < 2) return finishGame();
+  if (S.phase === 'play' && idx === S.drawer) return endRound('그리는 사람이 나갔어요');
+  if (S.phase === 'play' && guessers().every(p => p.solved)) return endRound('모두 맞혔어요!');
+  publish();
+}
+
+function startGame() {
+  S.players = S.players.filter(p => !p.left);
+  if (S.players.length < 2) return;
+  S.limit = +$('limit').value;
+  S.players.forEach(p => { p.score = 0; p.solved = false; });
+  S.chat = [];
+  H.queue = shuffle(S.players.map(p => p.id));
+  H.pool = shuffle(WORDS.slice());
+  nextRound();
+}
+function nextRound() {
+  let idx = -1;
+  while (H.queue.length && idx < 0) { const id = H.queue.shift(); idx = S.players.findIndex(p => p.id === id && !p.left); }
+  if (idx < 0) return finishGame();
+  S.phase = 'play'; S.drawer = idx; S.roundNo++;
+  S.players.forEach(p => p.solved = false);
+  H.word = H.pool.pop() || WORDS[0]; H.segs = []; hintShown = false;
+  S.hint = Array.from(H.word).map(() => '○').join(' '); S.answer = ''; S.note = '';
+  say({ sys: true, t: `✏️ ${S.players[idx].name} 님이 그립니다 (${H.word.length}글자)` });
+  limitMs = S.limit * 1000; deadline = Date.now() + limitMs;
+  clearCanvas(); broadcast({ t: 'clear' });
+  const d = S.players[idx].id;
+  if (d === 'host') myWord = { w: H.word, r: S.roundNo };
+  else if (conns[d]) conns[d].send({ t: 'word', w: H.word, r: S.roundNo });
+  publish();
+}
+function guess(idx, text) {
+  text = String(text || '').trim().slice(0, 20);
+  if (!text || S.phase !== 'play' || idx === S.drawer || S.players[idx].solved) return;
+  const p = S.players[idx];
+  if (text.replace(/\s+/g, '') === H.word) {
+    const remain = Math.max(0, deadline - Date.now()) / limitMs;
+    const pts = Math.round(10 + 40 * remain);
+    p.solved = true; p.score += pts; S.players[S.drawer].score += 10;
+    say({ ok: true, n: p.name, c: p.color, t: `정답! +${pts}점` });
+    if (guessers().every(g => g.solved)) return endRound('모두 맞혔어요!');
+  } else say({ n: p.name, c: p.color, t: text });
+  publish();
+}
+function endRound(note) {
+  S.phase = 'reveal'; S.answer = H.word; S.note = note;
+  say({ sys: true, t: `정답은 「${H.word}」` });
+  limitMs = 4000; deadline = Date.now() + limitMs;
+  publish();
+  setTimeout(() => { if (S.phase === 'reveal') nextRound(); }, 4000);
+}
+function finishGame() { S.phase = 'over'; publish(); }
+function hostTick() {
+  if (!S || S.phase !== 'play') return;
+  const r = deadline - Date.now();
+  if (r <= 0) return endRound('시간 초과!');
+  if (!hintShown && r < limitMs / 2 && H.word.length > 1) {
+    hintShown = true;
+    S.hint = Array.from(H.word).map((c, i) => i === 0 ? c : '○').join(' ');
+    publish();
+  }
+}
+
+$('start').onclick = () => { if (isHost) startGame(); };
+$('again').onclick = () => { if (isHost) startGame(); };
+
+/* ---------- 화면 ---------- */
+function renderPlayers(el, list, drawer) {
+  el.replaceChildren();
+  list.forEach((p, i) => {
+    const d = document.createElement('div');
+    d.className = 'pl' + (drawer === i ? ' drawer' : '') + (p.left ? ' gone' : '');
+    d.style.setProperty('--c', p.color);
+    const nm = document.createElement('div'); nm.className = 'nm';
+    nm.textContent = (drawer === i ? '✏️ ' : p.solved ? '✔ ' : '') + p.name + (p.id === myId ? ' (나)' : '');
+    const sc = document.createElement('div'); sc.className = 'sc'; sc.textContent = p.score;
+    d.append(nm, sc); el.appendChild(d);
+  });
+}
+
+function apply(s) {
+  S = s;
+  limitMs = s.phase === 'reveal' ? 4000 : s.limit * 1000;
+  deadline = Date.now() + s.left;
+  clearInterval(tick);
+
+  if (s.phase === 'lobby') {
+    show('waiting'); $('overlay').classList.remove('show');
+    const el = $('waitList'); el.replaceChildren();
+    s.players.forEach(p => {
+      const d = document.createElement('div'); d.className = 'pl'; d.style.setProperty('--c', p.color);
+      const nm = document.createElement('div'); nm.className = 'nm'; nm.textContent = p.name + (p.id === myId ? ' (나)' : '');
+      d.appendChild(nm); el.appendChild(d);
+    });
+    $('limitWrap').classList.toggle('hidden', !isHost);
+    $('start').classList.toggle('hidden', !isHost);
+    $('start').disabled = s.players.length < 2;
+    $('waitHint').textContent = isHost
+      ? (s.players.length < 2 ? '친구가 들어오면 시작할 수 있어요' : `${s.players.length}명 입장! 시작하세요`)
+      : '방장이 시작하길 기다리는 중…';
+    return;
+  }
+
+  show('game');
+  if (s.roundNo !== lastRound) { lastRound = s.roundNo; clearCanvas(); last = null; }
+  render();
+  tick = setInterval(() => {
+    const r = deadline - Date.now();
+    $('bar').style.width = (s.phase === 'over' ? 0 : Math.max(0, r / limitMs * 100)) + '%';
+  }, 100);
+}
+
+function render() {
+  const s = S, me = meIdx();
+  renderPlayers($('plist'), s.players, s.phase === 'play' || s.phase === 'reveal' ? s.drawer : -1);
+  const drawer = amDrawer();
+  $('tools').classList.toggle('hidden', !drawer);
+  if (drawer) buildTools();
+  cv.style.cursor = drawer ? 'crosshair' : 'default';
+
+  const chat = $('chat'); chat.replaceChildren();
+  for (const m of s.chat) {
+    const d = document.createElement('div');
+    if (m.sys) { d.className = 'sys'; d.textContent = m.t; }
+    else {
+      d.className = m.ok ? 'ok' : ''; d.style.setProperty('--c', m.c);
+      const b = document.createElement('b'); b.textContent = m.n + ' ';
+      d.append(b, document.createTextNode(m.t));
+    }
+    chat.appendChild(d);
+  }
+  chat.scrollTop = 1e6;
+
+  const mine = me >= 0 ? s.players[me] : null;
+  const canGuess = s.phase === 'play' && !drawer && mine && !mine.solved;
+  $('guess').disabled = !canGuess; $('send').disabled = !canGuess;
+  $('guess').placeholder = drawer ? '그림으로 설명하세요!' : mine && mine.solved ? '정답을 맞혔어요 👏' : '정답 입력';
+
+  if (s.phase === 'reveal') { $('banner').textContent = `정답: ${s.answer}`; hint(s.note); }
+  else if (s.phase === 'play') {
+    $('banner').textContent = drawer && myWord && myWord.r === s.roundNo ? `제시어: ${myWord.w}` : s.hint;
+    hint(drawer ? '제시어를 그림으로 그려 보세요 (글자 쓰기 금지!)' : `${s.players[s.drawer].name} 님이 그리는 중…`);
+  } else $('banner').textContent = '';
+
+  $('overlay').classList.toggle('show', s.phase === 'over');
+  if (s.phase === 'over') {
+    const rk = $('rank'); rk.replaceChildren();
+    [...s.players].sort((a, b) => b.score - a.score).forEach((p, i) => {
+      const d = document.createElement('div'); d.style.setProperty('--c', p.color);
+      const a = document.createElement('span'); a.textContent = `${['🥇', '🥈', '🥉'][i] || i + 1 + '위'} ${p.name}${p.id === myId ? ' (나)' : ''}`;
+      const b = document.createElement('span'); b.textContent = p.score + '점';
+      d.append(a, b); rk.appendChild(d);
+    });
+    $('again').classList.toggle('hidden', !isHost);
+    $('againHint').textContent = isHost ? '' : '방장이 다시 시작하길 기다리는 중…';
+  }
+}
+
+$('form').addEventListener('submit', e => {
+  e.preventDefault();
+  const w = $('guess').value.trim();
+  if (!w) return;
+  $('guess').value = '';
+  if (isHost) guess(meIdx(), w); else hostConn.send({ t: 'guess', w });
+});
+</script>
+</body>
+</html>
