@@ -267,11 +267,11 @@ function apply(s) {
   }
 }
 function showEnd(title, msg, canRestart) {
-  const won = S && S.over && S.winner === me;
-  $('clap').classList.toggle('hidden', !canRestart);
-  $('cheer').classList.toggle('hidden', !canRestart);
-  $('photo').style.display = canRestart ? '' : 'none';
-  $('cheer').textContent = won ? '승리를 진심으로 축하합니다!' : '아쉽지만 멋진 승부였어요! 수고하셨습니다!';
+  const won = !!(S && S.over && S.winner === me && canRestart);
+  $('clap').classList.toggle('hidden', !won);
+  $('cheer').classList.toggle('hidden', !won);
+  $('photo').style.display = won ? '' : 'none';
+  $('cheer').textContent = '승리를 진심으로 축하합니다!';
   $('winTitle').textContent = title; $('winMsg').textContent = msg;
   $('again').classList.toggle('hidden', !canRestart);
   $('overlay').classList.add('show');
